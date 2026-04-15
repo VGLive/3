@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shaka Player - IPTV Playlist</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@latest/dist/controls.min.css">
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .player-container {
+            width: 100%;
+            max-width: 800px;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        video {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 16/9;
+        }
+        .controls {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        select {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 4px;
+            border: 1px solid #444;
+            background-color: #222;
+            color: #fff;
+            width: 100%;
+            cursor: pointer;
+        }
+        .status {
+            color: #aaa;
+            font-size: 14px;
+        }
+        .error {
+            color: #ff4d4d;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>India IPTV Player</h2>
+    
+    <div class="player-container">
+        <video id="video" controls autoplay></video>
+    </div>
+
+    <div class="controls">
+        <label for="channelList"><strong>Select Channel:</strong></label>
+        <select id="channelList" disabled>
+            <option value="">Loading playlist...</option>
+        </select>
+        <div id="statusMessage" class="status">Initializing player...</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/shaka-player@latest/dist/shaka-player.compiled.min.js"></script>
+
+    <script>
+        const playlistUrl = 'https://iptv-org.github.io/iptv/raw/in.m3u';
+        const videoElement = document.getElementById('video');
+        const channelSelect = document.getElementById('channelList');
+        const statusMessage = document.getElementById('statusMessage');
+        let player;
+
+        // Initialize the Shaka Player App
+        async function initApp() {
+            // Install built-in polyfills to patch browser incompatibilities
+            shaka.polyfill.installAll();
+
+            if (shaka.Player.isBrowserSupported()) {
+                initPlayer();
+                await loadPlaylist();
+            } else {
+                statusMessage.innerHTML = '<span class="error">Browser not supported!</span>';
+            }
+        }
+
+        // Initialize Shaka Player instance
+        function initPlayer() {
+            player = new shaka.Player(videoElement);
+
+            // Listen for errors from the Player
+            player.addEventListener('error', onErrorEvent);
+        }
+
+        // Fetch and parse the M3U playlist
+        async function loadPlaylist() {
+            try {
+                statusMessage.textContent = 'Fetching playlist...';
+                const response = await fetch(playlistUrl);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const text = await response.text();
+                const channels = parseM3U(text);
+                
+                populateDropdown(channels);
+                statusMessage.textContent = `Successfully loaded ${channels.length} channels.`;
+                
+                // Handle channel selection
+                channelSelect.addEventListener('change', (e) => {
+                    const streamUrl = e.target.value;
+                    if (streamUrl) {
+                        playStream(streamUrl);
+                    }
+                });
+
+                // Auto-play the first channel if available
+                if (channels.length > 0) {
+                    channelSelect.value = channels[0].url;
+                    playStream(channels[0].url);
+                }
+
+            } catch (error) {
+                statusMessage.innerHTML = `<span class="error">Failed to load playlist: ${error.message}</span>`;
+                console.error('Error fetching playlist:', error);
+            }
+        }
+
+        // Parse standard M3U file into an array of channel objects
+        function parseM3U(m3uText) {
+            const lines = m3uText.split('\n');
+            const channels = [];
+            let currentChannel = { name: '', url: '' };
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                
+                if (line.startsWith('#EXTINF:')) {
+                    // Extract the channel name, which usually comes after the last comma
+                    const infoParts = line.split(',');
+                    currentChannel.name = infoParts.length > 1 ? infoParts.slice(1).join(',').trim() : 'Unknown Channel';
+                } else if (line && !line.startsWith('#')) {
+                    // If it's not empty and doesn't start with '#', it's a URL
+                    currentChannel.url = line;
+                    channels.push({ ...currentChannel });
+                    currentChannel = { name: '', url: '' }; // Reset for next channel
+                }
+            }
+            return channels;
+        }
+
+        // Populate the HTML select dropdown
+        function populateDropdown(channels) {
+            channelSelect.innerHTML = '<option value="">-- Choose a Channel --</option>';
+            channels.forEach(channel => {
+                const option = document.createElement('option');
+                option.value = channel.url;
+                option.textContent = channel.name;
+                channelSelect.appendChild(option);
+            });
+            channelSelect.disabled = false;
+        }
+
+        // Load and play the stream using Shaka Player
+        async function playStream(url) {
+            try {
+                statusMessage.textContent = 'Buffering...';
+                await player.load(url);
+                statusMessage.textContent = 'Playing stream.';
+            } catch (error) {
+                statusMessage.innerHTML = `<span class="error">Error loading stream: ${error.message}. This channel might be offline or blocked by CORS.</span>`;
+                console.error('Error code', error.code, 'object', error);
+            }
+        }
+
+        function onErrorEvent(event) {
+            // Extract the shaka.util.Error object from the event
+            statusMessage.innerHTML = `<span class="error">Player Error: ${event.detail.message || 'Stream failed to load.'}</span>`;
+            console.error('Error code', event.detail.code, 'object', event.detail);
+        }
+
+        // Initialize when the DOM is ready
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
