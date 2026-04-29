@@ -2,264 +2,178 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shaka Player - IPTV Playlist</title>
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@latest/dist/controls.min.css">
+    <title>Vikash Gupta</title>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
     
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #121212;
-            color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
-        .player-container {
-            width: 100%;
-            max-width: 800px;
-            background: #000;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            /* Smooth transition when entering fullscreen */
-            transition: all 0.3s ease; 
-        }
-        video {
-            width: 100%;
-            height: auto;
-            aspect-ratio: 16/9;
-            display: block;
-        }
-        .controls {
-            margin-top: 20px;
-            width: 100%;
-            max-width: 800px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        select {
-            padding: 10px;
-            font-size: 16px;
-            border-radius: 4px;
-            border: 1px solid #444;
-            background-color: #222;
-            color: #fff;
-            width: 100%;
-            cursor: pointer;
-        }
-        .btn-fullscreen {
-            padding: 12px;
-            font-size: 16px;
-            border-radius: 4px;
-            border: none;
-            background-color: #007bff;
-            color: white;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.2s;
-        }
-        .btn-fullscreen:hover {
-            background-color: #0056b3;
-        }
-        .status {
-            color: #aaa;
-            font-size: 14px;
-            text-align: center;
-        }
-        .error {
-            color: #ff4d4d;
-            font-weight: bold;
-        }
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet"/>
 
-        /* Adjustments for when the container actually goes fullscreen */
-        .player-container:fullscreen {
-            max-width: 100%;
-            border-radius: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .player-container:fullscreen video {
-            height: 100%;
-        }
+    <style>
+    /* --- CSS STYLES --- */
+    body {
+        font-family: 'Inter', 'Segoe UI', Helvetica, sans-serif;
+        background-color: #f3f4f6; /* Global Background */
+        margin: 0;
+        padding: 0;
+        color: #1f2937;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh; 
+    }
+
+    /* CARD CONTAINER */
+    .card {
+        background: #ffffff;
+        width: 90%;
+        max-width: 450px;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        border: 1px solid #e5e7eb;
+        margin: 20px auto;
+    }
+
+    /* NAME TITLE */
+    h1.profile-name {
+        margin: 0 0 20px 0;
+        font-size: 2.2em;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #4f46e5; /* VG Primary */
+        font-weight: 800;
+        line-height: 1.2;
+    }
+
+    /* PROFILE PICTURE */
+    .profile-pic {
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #eef2ff;
+        box-shadow: 0 4px 15px rgba(79, 70, 229, 0.15);
+        margin-bottom: 25px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* INFO ROWS */
+    .info-row {
+        margin-bottom: 12px;
+        font-size: 1.1em;
+        color: #4b5563;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+    .info-row i {
+        color: #4f46e5; 
+        width: 20px;
+    }
+
+    /* SECTION TITLES */
+    .section-header {
+        text-transform: uppercase;
+        font-size: 0.85em;
+        color: #6b7280;
+        letter-spacing: 1.5px;
+        margin: 25px 0 12px 0;
+        font-weight: 700;
+    }
+
+    /* BUTTONS GENERAL */
+    .links-container {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .btn {
+        display: block;
+        padding: 14px;
+        text-decoration: none;
+        color: white;
+        border-radius: 10px;
+        font-weight: 700;
+        transition: transform 0.2s, box-shadow 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+    .btn:hover {
+        transform: translateY(-2px);
+        opacity: 0.95;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    /* --- WEBSITE BUTTON COLORS --- */
+    
+    /* VG Live Tools (Indigo) */
+    .btn-tools {
+        background: #4f46e5; 
+        border: 1px solid #4338ca;
+    }
+
+    /* VG Live TV (Red - Standard Live TV Color) */
+    .btn-tv {
+        background: #dc2626; /* Red for TV Brand */
+        border: 1px solid #b91c1c;
+    }
+
+    /* SOCIAL COLORS */
+    .instagram { background: #E1306C; }
+    .facebook { background: #1877f2; }
+    .twitter-x { background: #000000; } 
     </style>
 </head>
+
 <body>
+    <div class="card">
+        <h1 class="profile-name">VIKASH GUPTA</h1>
 
-    <h2>India IPTV Player</h2>
-    
-    <div class="player-container" id="videoContainer">
-        <video id="video" controls autoplay></video>
+        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj06jE_vmyMicKIXOp1BYw6IYWRaQ-WTmDZZWyBteJ68QQmzp5Dkk9VuFmUHT83a9JE7NvYK9NvnbqrVSOfTCQnBClcsU4gIGhAAW83wwMo7ZZox-iTODveE-lWlNTjj8KkUPffDzA0QwdQeMnOoOt8p6Mt8oVk_CUASUNrtU2bV-HjCl9EdWoOaLg9Bpjo/s531/VG%20JPG.jpg" alt="Vikash Gupta" class="profile-pic" />
+
+        <div class="info-row">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>Mumbai, India</span>
+        </div>
+
+        <div class="info-row">
+            <i class="fas fa-envelope"></i>
+            <span>peoplesvikashgupta@gmail.com</span>
+        </div>
+
+        <hr style="border:0; border-top:1px solid #e5e7eb; margin: 25px 0 15px 0;" />
+
+        <div class="section-header">My Websites</div>
+        <div class="links-container">
+            <a href="http://www.vglivetools.blogspot.com" target="_blank" class="btn btn-tools">
+                <i class="fas fa-layer-group"></i> VG Live Tools
+            </a>
+            
+            <a href="https://vgtv.pages.dev/" target="_blank" class="btn btn-tv">
+                <i class="fa-solid fa-tv"></i> VG TV
+            </a>
+        </div>
+
+        <div class="section-header">Social Media</div>
+        <div class="links-container">
+            <a href="https://www.instagram.com/peoplesvikashgupta" target="_blank" class="btn instagram">
+                <i class="fab fa-instagram"></i> Instagram
+            </a>
+            
+            <a href="https://www.facebook.com/peoplesvikashgupta" target="_blank" class="btn facebook">
+                <i class="fab fa-facebook"></i> Facebook
+            </a>
+
+            <a href="https://www.x.com/peoplesvikash" target="_blank" class="btn twitter-x">
+                <i class="fa-brands fa-x-twitter"></i> X
+            </a>
+        </div>
     </div>
-
-    <div class="controls">
-        <button id="fullscreenBtn" class="btn-fullscreen">Enter Fullscreen</button>
-
-        <label for="channelList"><strong>Select Channel:</strong></label>
-        <select id="channelList" disabled>
-            <option value="">Loading playlist...</option>
-        </select>
-        <div id="statusMessage" class="status">Initializing player...</div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/shaka-player@latest/dist/shaka-player.compiled.min.js"></script>
-
-    <script>
-        const playlistUrl = 'https://iptv-org.github.io/iptv/raw/in.m3u';
-        const videoElement = document.getElementById('video');
-        const videoContainer = document.getElementById('videoContainer');
-        const channelSelect = document.getElementById('channelList');
-        const statusMessage = document.getElementById('statusMessage');
-        const fullscreenBtn = document.getElementById('fullscreenBtn');
-        let player;
-
-        // Initialize the Shaka Player App
-        async function initApp() {
-            shaka.polyfill.installAll();
-
-            if (shaka.Player.isBrowserSupported()) {
-                initPlayer();
-                await loadPlaylist();
-                setupFullscreen();
-            } else {
-                statusMessage.innerHTML = '<span class="error">Browser not supported!</span>';
-            }
-        }
-
-        // Initialize Shaka Player instance
-        function initPlayer() {
-            player = new shaka.Player(videoElement);
-            player.addEventListener('error', onErrorEvent);
-        }
-
-        // Setup Fullscreen Logic
-        function setupFullscreen() {
-            fullscreenBtn.addEventListener('click', () => {
-                if (!document.fullscreenElement) {
-                    // Enter fullscreen
-                    if (videoContainer.requestFullscreen) {
-                        videoContainer.requestFullscreen();
-                    } else if (videoContainer.webkitRequestFullscreen) { /* Safari */
-                        videoContainer.webkitRequestFullscreen();
-                    } else if (videoContainer.msRequestFullscreen) { /* IE11 */
-                        videoContainer.msRequestFullscreen();
-                    }
-                } else {
-                    // Exit fullscreen
-                    if (document.exitFullscreen) {
-                        document.exitFullscreen();
-                    } else if (document.webkitExitFullscreen) { /* Safari */
-                        document.webkitExitFullscreen();
-                    } else if (document.msExitFullscreen) { /* IE11 */
-                        document.msExitFullscreen();
-                    }
-                }
-            });
-
-            // Listen for fullscreen changes to update the button text
-            document.addEventListener('fullscreenchange', updateFullscreenButton);
-            document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
-            document.addEventListener('msfullscreenchange', updateFullscreenButton);
-        }
-
-        function updateFullscreenButton() {
-            if (document.fullscreenElement) {
-                fullscreenBtn.textContent = 'Exit Fullscreen';
-            } else {
-                fullscreenBtn.textContent = 'Enter Fullscreen';
-            }
-        }
-
-        // Fetch and parse the M3U playlist
-        async function loadPlaylist() {
-            try {
-                statusMessage.textContent = 'Fetching playlist...';
-                const response = await fetch(playlistUrl);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const text = await response.text();
-                const channels = parseM3U(text);
-                
-                populateDropdown(channels);
-                statusMessage.textContent = `Successfully loaded ${channels.length} channels.`;
-                
-                channelSelect.addEventListener('change', (e) => {
-                    const streamUrl = e.target.value;
-                    if (streamUrl) {
-                        playStream(streamUrl);
-                    }
-                });
-
-                if (channels.length > 0) {
-                    channelSelect.value = channels[0].url;
-                    playStream(channels[0].url);
-                }
-
-            } catch (error) {
-                statusMessage.innerHTML = `<span class="error">Failed to load playlist: ${error.message}</span>`;
-                console.error('Error fetching playlist:', error);
-            }
-        }
-
-        // Parse standard M3U file into an array of channel objects
-        function parseM3U(m3uText) {
-            const lines = m3uText.split('\n');
-            const channels = [];
-            let currentChannel = { name: '', url: '' };
-
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i].trim();
-                
-                if (line.startsWith('#EXTINF:')) {
-                    const infoParts = line.split(',');
-                    currentChannel.name = infoParts.length > 1 ? infoParts.slice(1).join(',').trim() : 'Unknown Channel';
-                } else if (line && !line.startsWith('#')) {
-                    currentChannel.url = line;
-                    channels.push({ ...currentChannel });
-                    currentChannel = { name: '', url: '' };
-                }
-            }
-            return channels;
-        }
-
-        // Populate the HTML select dropdown
-        function populateDropdown(channels) {
-            channelSelect.innerHTML = '<option value="">-- Choose a Channel --</option>';
-            channels.forEach(channel => {
-                const option = document.createElement('option');
-                option.value = channel.url;
-                option.textContent = channel.name;
-                channelSelect.appendChild(option);
-            });
-            channelSelect.disabled = false;
-        }
-
-        // Load and play the stream using Shaka Player
-        async function playStream(url) {
-            try {
-                statusMessage.textContent = 'Buffering...';
-                await player.load(url);
-                statusMessage.textContent = 'Playing stream.';
-            } catch (error) {
-                statusMessage.innerHTML = `<span class="error">Error loading stream. This channel might be offline or blocked by CORS.</span>`;
-                console.error('Error code', error.code, 'object', error);
-            }
-        }
-
-        function onErrorEvent(event) {
-            statusMessage.innerHTML = `<span class="error">Player Error: ${event.detail.message || 'Stream failed to load.'}</span>`;
-            console.error('Error code', event.detail.code, 'object', event.detail);
-        }
-
-        // Initialize when the DOM is ready
-        document.addEventListener('DOMContentLoaded', initApp);
-    </script>
 </body>
 </html>
